@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container text-center mt-5">
+
+<h2>💳 Payment</h2>
+
+<h4>Movie : {{movie.title}}</h4>
+
+<p>Seat : {{seat}}</p>
+
+<img src="{% static 'images/qr.jpg' %}" width="250">
+
+<br><br>
+
+<a href="/ticket/{{movie_id}}/?seats={{seats}}" class="btn btn-success">
+Confirm Payment
+</a>
+
+<a href="/" class="btn btn-outline-light mt-2">
+🏠 Back to Home
+</a>
+
+</div>
+
+{% endblock %}

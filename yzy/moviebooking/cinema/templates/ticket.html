@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div style="
+background:white;
+color:black;
+padding:30px;
+border-radius:15px;
+max-width:500px;
+margin:auto;
+">
+
+<h2>🎬 Cinema YZY Ticket</h2>
+
+<hr>
+
+<p><b>Movie :</b> {{movie.title}}</p>
+
+<p><b>Seat :</b> {{seats|join:" | "}}</p>
+
+<p><b>Date :</b> Today</p>
+
+<div class="text-center mt-4">
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{movie.title}}-{{seat}}">
+
+</div>
+
+</div>
+
+<div class="text-center mt-4">
+
+<a href="/" class="btn btn-primary">
+🏠 Back Home
+</a>
+
+<a href="/mytickets/" class="btn btn-warning">
+🎟 My Tickets
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}
