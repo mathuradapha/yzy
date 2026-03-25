@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container text-center mt-5">
+
+<h2>🎬 Select Seat</h2>
+
+<div class="screen"></div>
+
+<form method="POST">
+{% csrf_token %}
+
+<div id="seat-map">
+
+{% for row in "ABCDEFGHIJ" %}
+
+<div class="row-seat row-{{forloop.counter}}">
+
+{% for num in numbers %}
+
+{% if num == "6" %}
+<span class="aisle"></span>
+{% endif %}
+
+{% with seat=row|add:num %}
+
+<button type="button"
+class="seat {% if seat in booked %}booked{% endif %}"
+data-seat="{{seat}}">
+
+{{seat}}
+
+</button>
+
+{% endwith %}
+
+{% endfor %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<input type="hidden" name="seats" id="selectedSeats">
+
+<h4 class="mt-4">🎟 Selected: <span id="showSeats">-</span></h4>
+<h4>💰 Total: <span id="totalPrice">0</span> ฿</h4>
+
+<button class="btn btn-success mt-3">
+Go to Payment
+</button>
+
+</form>
+
+</div>
+
+<script>
+
+let selected = []
+
+document.querySelectorAll('.seat:not(.booked)').forEach(btn=>{
+    btn.onclick = () => {
+
+        let seat = btn.dataset.seat
+
+        if(selected.includes(seat)){
+            selected = selected.filter(s=>s!=seat)
+            btn.classList.remove("selected")
+        }else{
+            selected.push(seat)
+            btn.classList.add("selected")
+        }
+
+        document.getElementById("showSeats").innerText = selected.join(", ")
+
+        // 💰 คำนวณราคา
+        let total = 0
+
+        selected.forEach(s=>{
+            let row = s[0]
+
+            if("ABC".includes(row)) total += 120
+            else if("DEF".includes(row)) total += 150
+            else total += 180
+        })
+
+        document.getElementById("totalPrice").innerText = total
+        document.getElementById("selectedSeats").value = selected.join(",")
+
+    }
+})
+
+</script>
+
+{% endblock %}
