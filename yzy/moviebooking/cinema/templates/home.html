@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div id="carouselExample" 
+     class="carousel slide carousel-fade"
+     data-bs-ride="carousel"
+     data-bs-interval="5000"
+     data-bs-pause="false">
+
+<div class="carousel-indicators">
+    {% for m in movies %}
+    <button type="button" 
+            data-bs-target="#carouselExample" 
+            data-bs-slide-to="{{ forloop.counter0 }}"
+            class="{% if forloop.first %}active{% endif %}">
+    </button>
+    {% endfor %}
+</div>
+
+<div class="carousel-inner">
+
+
+{% for m in movies %}
+<div class="carousel-item {% if forloop.first %}active{% endif %} position-relative">
+
+    {% if m.banner %}
+        <img src="{{ m.banner }}" class="d-block w-100 banner">
+    {% else %}
+        <img src="https://via.placeholder.com/1200x450?text=No+Banner" class="d-block w-100 banner">
+    {% endif %}
+
+    <!-- overlay -->
+    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0,0,0,0.5); pointer-events: none;"></div>
+    
+    <div class="carousel-caption d-none d-md-block">
+        <h1 class="banner-title fw-bold">🎬CINEMA YZY </h1>
+        <p class="banner-sub">ระบบจองตั๋วหนังออนไลน์อันดับหนึ่ง จองง่าย ได้ที่นั่งชัวร์</p>
+    </div>
+
+</div>
+{% endfor %}
+
+</div> 
+<button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+  <span class="carousel-control-prev-icon"></span>
+</button>
+<button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+  <span class="carousel-control-next-icon"></span>
+</button>
+
+<div class="progress" style="height:3px;">
+  <div id="carouselProgress" class="progress-bar"></div>
+</div>
+
+</div> <div class="container mt-4">
+    <div class="category-wrapper d-flex flex-wrap justify-content-center gap-2">
+        <a href="/" class="btn btn-outline-info px-3 m-1">All</a>
+        {% for c in categories %}
+        <a href="/?category={{c.id}}{% if request.GET.search %}&search={{request.GET.search}}{% endif %}" 
+           class="btn btn-outline-info px-3 m-1">
+            {{c.name}}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+
+<div class="container mt-5">
+
+<h3>🎬 Movies</h3>
+
+<div id="movie-list" class="row">
+
+{% for m in movies %}
+<div class="col-md-3 mb-4">
+    <div class="movie-card position-relative" style="height: 100%;">
+        <span class="age-badge">{{m.age_rating}}</span>
+        <img src="{{m.poster}}" class="movie-img w-100">
+        
+        <div class="p-3">
+            <h5 class="text-white">{{m.title}}</h5>
+            
+            <a href="{% url 'movie_detail' m.id %}" 
+               class="btn btn-cinema w-100" 
+               style="position: relative; z-index: 5;">
+               🎫จองตั๋วหนัง
+            </a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}
