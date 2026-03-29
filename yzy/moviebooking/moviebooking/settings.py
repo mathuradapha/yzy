@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'yzy.moviebooking.cinema',
+    'yzy.moviebooking.cinema.apps.CinemaConfig',
 ]
 
 STATIC_URL = '/static/'
