@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div style="background:white; color:black; padding:30px; border-radius:15px; max-width:500px; margin:auto; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        
+        <h2 class="text-center">🎬 Cinema YZY Ticket</h2>
+        <p class="text-center text-muted">ใบเสร็จรับเงิน / ตั๋วเข้าชม</p>
+        <hr>
+
+        <div class="mb-3">
+            <p class="mb-1"><b>ชื่อผู้สั่งซื้อ :</b> <span class="text-primary">{{ user.username }}</span></p>
+            <p class="mb-1"><b>Movie :</b> {{ movie.title }}</p>
+            <p class="mb-1"><b>Seat :</b> {{ seats|join:" | " }}</p>
+            <p class="mb-1"><b>Date :</b> {% now "d/m/Y" %}</p>
+        </div>
+
+        <div class="text-center mt-4 p-3" style="background: #f8f9fa; border-radius: 10px;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{user.username}}-{{movie.title}}-{{seats|join:','}}" alt="QR Code">
+            <p class="small mt-2 text-muted">Scan เพื่อเข้าชม</p>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-primary">🏠 Back Home</a>
+        <a href="/mytickets/" class="btn btn-warning">🎟 My Tickets</a>
+    </div>
+</div>
+{% endblock %}
