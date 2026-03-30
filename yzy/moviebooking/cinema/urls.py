@@ -36,7 +36,7 @@ path('add-movie/', views.add_movie),
 
 path('edit-movie/<int:id>/', views.edit_movie),
 
-path('delete-movie/<int:id>/', views.delete_movie),
+path('delete-movie/<int:id>/', views.delete_movie, name='delete_movie'),
 
 path('login/', views.login_view, name='login'),
 
