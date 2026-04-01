@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* --- CSS Variables สำหรับคุมธีม Dark Dashboard --- */
+    :root {
+        --bg-color: #0d1117;        /* พื้นหลังนอก */
+        --card-bg: #161b22;         /* พื้นหลังตาราง/การ์ด */
+        --text-color: #ffffff;      /* ตัวหนังสือหลัก */
+        --text-muted: #8b949e;      /* ตัวหนังสือจาง */
+        --border-color: #30363d;    /* สีเส้นขอบ */
+        --primary-blue: #0d6efd;    /* สีฟ้าสถิติ */
+        --accent-yellow: #ffc107;   /* สีเหลืองแก้ไข */
+        --accent-red: #dc3545;      /* สีแดงลบ */
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        /* ฟอนต์สไตล์ Modern Dashboard */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    /* --- ส่วนหัว (Header) --- */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        margin-bottom: 25px;
+    }
+
+    .title-area h2 {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    /* --- สถิติ (Stats Card) --- */
+    .stats-card {
+        background-color: var(--primary-blue);
+        border-radius: 10px;
+        padding: 25px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .stats-card .label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .stats-card .count {
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+
+    /* --- ตารางสมาชิก (Black Theme Table) --- */
+    .user-list-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: var(--card-bg);
+    }
+
+    .user-table thead th {
+        background-color: #0d1117; /* หัวตารางเข้มกว่าตัว */
+        color: var(--text-color);
+        font-weight: 600;
+        text-align: left;
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.95rem;
+    }
+
+    .user-table tbody td {
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-color);
+        vertical-align: middle;
+    }
+
+    .user-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.03); /* Hover ไฮไลท์เบาๆ */
+    }
+
+    /* --- ปุ่มจัดการ (Action Buttons) --- */
+    .btn-action-sm {
+        padding: 6px 14px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: opacity 0.2s;
+        border: none;
+    }
+
+    .btn-edit {
+        background-color: var(--accent-yellow);
+        color: #000 !important;
+        margin-right: 5px;
+    }
+
+    .btn-delete {
+        background-color: var(--accent-red);
+        color: #fff !important;
+    }
+
+    .btn-action-sm:hover {
+        opacity: 0.85;
+    }
+
+    /* ปุ่มกลับ */
+    .btn-back {
+        color: var(--text-muted);
+        text-decoration: none;
+        border: 1px solid var(--border-color);
+        padding: 6px 15px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+    }
+
+    .btn-back:hover {
+        background-color: var(--border-color);
+        color: #fff;
+    }
+
+</style>
+
+<div class="container mt-5">
+
+    <div class="dashboard-header">
+        <div class="title-area">
+            <h2>👤 จัดการสมาชิก</h2>
+            <div class="subtitle text-light opacity-75">ตรวจสอบและแก้ไขข้อมูลผู้ใช้งานในระบบ</div>
+        </div>
+        <a href="/admin-dashboard" class="btn-back">กลับสู่หน้าหลัก</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="label">จำนวนสมาชิกทั้งหมด</div>
+                <div class="count">{{ total_users }} คน</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="user-list-card">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th style="width: 70%;">ชื่อผู้ใช้งาน (Username)</th>
+                    <th class="text-end">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td class="fw-bold">{{ u.username }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'edit_user' u.id %}" class="btn-action-sm btn-edit">แก้ไข</a>
+                        <a href="{% url 'delete_user' u.id %}" class="btn-action-sm btn-delete"onclick="return confirm('⚠️ ลบผู้ใช้ {{ u.username }} ใช่หรือไม่?')">ลบ</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2" class="text-center py-5 text-muted">ไม่พบข้อมูลสมาชิกในระบบ</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

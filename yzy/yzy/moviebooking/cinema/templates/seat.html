@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* --- ธีมม่วงพาสเทลสำหรับหน้าเลือกที่นั่ง --- */
+    .seat-booking-wrapper {
+        min-height: 100vh;
+        padding: 50px 0;
+        background-color: var(--bg-dark); /* ใช้สีจาก base.html */
+        color: white;
+    }
+
+    .booking-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: white;
+        margin-bottom: 40px;
+    }
+
+    /* --- จอภาพ (Screen) --- */
+    .screen-container {
+        perspective: 400px; /* เพิ่มมิติ 3D */
+        margin-bottom: 50px;
+    }
+
+    .screen {
+        background: linear-gradient(to bottom, var(--pastel-purple), var(--pastel-pink));
+        height: 12px;
+        width: 80%;
+        margin: 0 auto;
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0; /* ส่วนโค้งจอ */
+        box-shadow: 0 10px 30px rgba(216, 180, 254, 0.4); /* แสงฟุ้งจอ */
+        transform: rotateX(-10deg); /* เอียงจอนิดหน่อย */
+    }
+
+    .screen-text {
+        color: rgba(255,255,255,0.4);
+        font-size: 0.8rem;
+        letter-spacing: 5px;
+        margin-top: 10px;
+        text-transform: uppercase;
+    }
+
+    /* --- แผนผังที่นั่ง (Seat Map) --- */
+    #seat-map {
+        display: inline-block;
+        margin-bottom: 40px;
+    }
+
+    .row-seat {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+        gap: 6px; /* ระยะห่างระหว่างเก้าอี้ */
+    }
+
+    .row-label {
+        font-weight: bold;
+        color: var(--pastel-purple);
+        width: 30px;
+        text-align: right;
+        margin-right: 15px;
+    }
+
+    /* ตกแต่งเก้าอี้ (Seat) */
+    .seat {
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: #8b949e; /* สีเก้าอี้ว่าง (เทา) */
+        font-size: 1.6rem; /* ขนาดไอคอนเก้าอี้ */
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .seat:hover:not(.booked) {
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* สถานะเก้าอี้ */
+    .seat.booked {
+        color: #30363d; /* สีเก้าอี้ที่จองแล้ว (เทาเข้ม) */
+        cursor: not-allowed;
+    }
+
+    .seat.selected {
+        color: var(--pastel-purple); /* สีเก้าอี้ที่เลือก (ม่วง) */
+        animation: pulse 0.5s ease; /* แอนิเมชันตอนเลือก */
+    }
+
+    .seat.selected i {
+        filter: drop-shadow(0 0 8px rgba(216, 180, 254, 0.6));
+    }
+
+    /* ทางเดิน (Aisle) */
+    .aisle {
+        width: 40px; /* ความกว้างทางเดิน */
+    }
+
+    /* Legends (โซนราคา) */
+    /* --- Legend ดีไซน์ใหม่ จึ้งระดับ 10 --- */
+    .booking-legend {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 50px;
+        padding: 20px 40px;
+        background: rgba(255, 255, 255, 0.03); /* กระจกฝ้า */
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(216, 180, 254, 0.2);
+        border-radius: 100px; /* ทรงแคปซูลหรูๆ */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(216, 180, 254, 0.05);
+        flex-wrap: wrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #e2e8f0;
+        letter-spacing: 0.5px;
+    }
+
+    /* ตกแต่งไอคอนใน Legend */
+    .legend-icon {
+        font-size: 1.3rem;
+        filter: drop-shadow(0 0 5px rgba(255,255,255,0.1));
+    }
+
+    /* กล่องสีราคาแบบมี Glow */
+    .price-box {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        display: inline-block;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* เฉพาะโซนราคา ให้มีแสงนวลๆ ตามสีม่วงพาสเทล */
+    .zone-a { background: #4a5568; } /* เทาเข้มหรู */
+    .zone-d { background: #cbd5e0; } /* เทาขาวสว่าง */
+    .zone-g { 
+        background: var(--pastel-purple); 
+        box-shadow: 0 0 10px var(--pastel-purple); 
+        border: none;
+    }
+
+    /* ตัวหนังสือบอกราคา */
+    .price-tag {
+        color: var(--pastel-purple);
+        font-weight: 700;
+        margin-left: 2px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .legend-icon {
+        font-size: 1.4rem;
+    }
+
+    /* --- สรุปราคา (Glassmorphism Footer) --- */
+    .booking-summary-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(17, 20, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border-top: 1px solid var(--border-purple);
+        padding: 20px 0;
+        z-index: 100;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+    }
+
+    .summary-text-purple {
+        color: var(--pastel-purple);
+        font-weight: bold;
+    }
+
+    .summary-price {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .btn-booking-gold {
+        background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
+        color: #2e1065 !important;
+        font-weight: 700;
+        padding: 12px 40px;
+        border: none;
+        border-radius: 50px;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-booking-gold:hover {
+        background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(216, 180, 254, 0.4);
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1.1); }
+    }
+
+    .showtime-btn {
+    border-radius: 20px;
+    padding: 10px 25px;
+    transition: 0.3s;
+}
+
+.showtime-btn.active {
+    background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
+    color: #2e1065 !important;
+    border: none;
+    box-shadow: 0 0 15px rgba(216, 180, 254, 0.5);
+}
+
+</style>
+
+<div class="seat-booking-wrapper text-center">
+    <div class="container">
+        
+        <h2 class="booking-title">🎬 SELECT SEAT</h2>
+
+        <div class="mb-5">
+    <h5 class="text-white mb-3">🕒 เลือกรอบฉาย</h5>
+
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <button type="button" class="btn btn-outline-light showtime-btn" data-time="10:00">
+            10:00
+        </button>
+        <button type="button" class="btn btn-outline-light showtime-btn" data-time="13:00">
+            13:00
+        </button>
+        <button type="button" class="btn btn-outline-light showtime-btn" data-time="16:00">
+            16:00
+        </button>
+        <button type="button" class="btn btn-outline-light showtime-btn" data-time="19:00">
+            19:00
+        </button>
+    </div>
+</div>
+
+        <div class="screen-container">
+            <div class="screen"></div>
+            <p class="screen-text">จอภาพ (SCREEN)</p>
+        </div>
+
+        <div class="booking-legend">
+            <div class="legend-item">
+                <i class="fas fa-couch legend-icon" style="color: #4a5568;"></i> 
+                <span>ว่าง</span>
+            </div>
+            <div class="legend-item">
+                <i class="fas fa-couch legend-icon" style="color: #1a202c; filter: brightness(0.5);"></i> 
+                <span>จองแล้ว</span>
+            </div>
+            <div class="legend-item">
+                <i class="fas fa-couch legend-icon" style="color: var(--pastel-purple); filter: drop-shadow(0 0 8px var(--pastel-purple));"></i> 
+                <span style="color: var(--pastel-purple); font-weight: 700;">ที่เลือก</span>
+            </div>
+
+            <div style="width: 1px; height: 20px; background: rgba(216, 180, 254, 0.3); margin: 0 10px;"></div>
+
+            <div class="legend-item">
+                <span class="price-box zone-a"></span> 
+                <span>Zone A-C <span class="price-tag">120฿</span></span>
+            </div>
+            <div class="legend-item">
+                <span class="price-box zone-d"></span> 
+                <span>Zone D-F <span class="price-tag">150฿</span></span>
+            </div>
+            <div class="legend-item">
+                <span class="price-box zone-g"></span> 
+                <span>Zone G-J <span class="price-tag">180฿</span></span>
+            </div>
+        </div>
+
+        <form method="POST" id="bookingForm">
+            {% csrf_token %}
+            <input type="hidden" name="seats" id="selectedSeats">
+            <input type="hidden" name="showtime" id="selectedTime">
+            
+
+            <div id="seat-map">
+                {% for row in "ABCDEFGHIJ" %}
+                    <div class="row-seat row-{{forloop.counter}}">
+                        <span class="row-label">{{ row }}</span>
+
+                        {% for num in numbers %}
+                            {% if num == "6" %}
+                                <span class="aisle"></span> {% endif %}
+
+                            {% with seat=row|add:num %}
+                                <button type="button"
+                                class="seat {% if seat in booked %}booked{% endif %}"
+                                data-seat="{{seat}}">
+                                    <i class="fas fa-couch"></i> </button>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+    <div class="booking-summary-bar mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-7 text-md-start mb-3 mb-md-0">
+                    <span class="fs-5 text-white me-2">🎟 <span class="summary-text-purple" id="showSeats">-</span></span>
+                </div>
+                <div class="col-md-5 text-md-end">
+                    <span class="fs-5 text-white me-3">💰 <span class="summary-price" id="totalPrice">0</span> ฿</span>
+                    <button type="submit" form="bookingForm" class="btn-booking-gold">
+                        Go to Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// 🔥 ดึง showtime จาก URL
+const urlParams = new URLSearchParams(window.location.search)
+let selectedTime = urlParams.get("showtime") || ""
+
+// ✅ ถ้ามีค่า → ใส่ลง hidden input
+if(selectedTime){
+    document.getElementById("selectedTime").value = selectedTime
+
+    // ✨ ทำให้ปุ่ม active
+    document.querySelectorAll('.showtime-btn').forEach(btn => {
+        if(btn.dataset.time === selectedTime){
+            btn.classList.add("active")
+        }
+    })
+}
+
+    let selected = []
+
+    document.querySelectorAll('.seat:not(.booked)').forEach(btn => {
+        btn.onclick = () => {
+            let seat = btn.dataset.seat
+
+            if (selected.includes(seat)) {
+                selected = selected.filter(s => s != seat)
+                btn.classList.remove("selected")
+            } else {
+                selected.push(seat)
+                btn.classList.add("selected")
+            }
+
+            document.getElementById("showSeats").innerText = selected.join(", ")
+
+            // 💰 คำนวณราคา
+            let total = 0
+
+            selected.forEach(s => {
+                let row = s[0]
+
+                if ("ABC".includes(row)) total += 120
+                else if ("DEF".includes(row)) total += 150
+                else total += 180
+            })
+
+            document.getElementById("totalPrice").innerText = total
+            document.getElementById("selectedSeats").value = selected.join(",")
+        }
+    })
+
+const btn = document.querySelector(".btn-booking-gold")
+
+
+
+document.querySelectorAll('.showtime-btn').forEach(btn => {
+    btn.onclick = () => {
+        let time = btn.dataset.time
+
+        // ✅ เพิ่ม 2 บรรทัดนี้
+        selectedTime = time
+        document.getElementById("selectedTime").value = time
+
+        // 🔥 reload หน้า
+        window.location.href = `?showtime=${time}`
+    }
+})
+
+if (btn){
+    btn.onclick = function(e){
+        if(selected.length === 0){
+            alert("กรุณาเลือกที่นั่งก่อน")
+            e.preventDefault()
+        }
+        else if(!selectedTime){
+            alert("กรุณาเลือกรอบฉาย")
+            e.preventDefault()
+        }
+    }
+}
+
+</script>
+{% endblock %}

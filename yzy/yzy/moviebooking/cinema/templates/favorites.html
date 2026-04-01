@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* --- Favorite Theme: Pastel Dream --- */
+    .fav-wrapper {
+        min-height: 100vh;
+        padding: 60px 0;
+        background-image: radial-gradient(circle at 50% -10%, #2e1065 0%, var(--bg-dark) 60%);
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .section-title i {
+        color: #ff4ecd; /* สีชมพูหัวใจเด้งๆ */
+        filter: drop-shadow(0 0 10px rgba(255, 78, 205, 0.5));
+    }
+
+    /* การ์ดหนังรายการโปรด */
+    .fav-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(216, 180, 254, 0.15);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        position: relative;
+    }
+
+    .fav-card:hover {
+        transform: translateY(-12px) scale(1.03);
+        border-color: var(--pastel-purple);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 20px rgba(216, 180, 254, 0.2);
+    }
+
+    .fav-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 380px;
+    }
+
+    .fav-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .fav-card:hover .fav-img {
+        transform: scale(1.1);
+        filter: brightness(0.7);
+    }
+
+    /* ข้อมูลหนังในการ์ด */
+    .fav-info {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .fav-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 15px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* ปุ่มจองตั๋วแบบเล็กพริกขี้หนู */
+    .btn-fav-book {
+        background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
+        color: #2e1065 !important;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 50px;
+        padding: 8px 20px;
+        border: none;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-fav-book:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(216, 180, 254, 0.4);
+    }
+
+    /* ข้อความเมื่อไม่มีรายการโปรด */
+    .empty-fav {
+        padding: 100px 0;
+        color: var(--text-muted);
+        text-align: center;
+    }
+
+    .empty-fav i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+</style>
+
+<div class="fav-wrapper">
+    <div class="container">
+        
+        <h2 class="section-title">
+            <i class="fas fa-heart me-3"></i>รายการโปรดของฉัน
+        </h2>
+
+        <div class="row g-4">
+            {% for f in favs %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="fav-card shadow">
+                    <div class="fav-img-wrapper">
+                        <img src="{{f.movie.poster}}" class="fav-img" alt="{{f.movie.title}}">
+                        <div class="position-absolute top-0 end-0 p-3">
+                            <a href="{% url 'favorite' f.movie.id %}" class="text-white" style="text-shadow: 0 0 10px rgba(0,0,0,0.8);">
+                                <i class="fas fa-heart-broken fa-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="fav-info">
+                        <h5 class="fav-title">{{f.movie.title}}</h5>
+                        <a href="{% url 'movie_detail' f.movie.id %}" class="btn-fav-book">
+                            <i class="fas fa-ticket-alt me-1"></i> จองตั๋วเลย
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 empty-fav">
+                <i class="fas fa-heart"></i>
+                <h3>ยังไม่มีภาพยนตร์ที่คุณถูกใจ</h3>
+                <p>กลับไปเลือกชมภาพยนตร์ที่คุณชอบที่หน้าหลักได้เลย</p>
+                <a href="/" class="btn btn-outline-pastel mt-3 rounded-pill px-4">ไปหน้าหลัก</a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

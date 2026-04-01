@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* --- Payment Theme: Pastel Galactic --- */
+    .payment-wrapper {
+        min-height: 100vh;
+        padding: 60px 0;
+        background-image: radial-gradient(circle at 50% 0%, #2e1065 0%, var(--bg-dark) 70%);
+    }
+
+    .payment-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(216, 180, 254, 0.2);
+        border-radius: 30px;
+        padding: 40px;
+        max-width: 500px;
+        margin: 0 auto;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* เส้นประเลียนแบบใบเสร็จ */
+    .payment-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 5px;
+        background: linear-gradient(90deg, var(--pastel-purple), var(--pastel-pink));
+    }
+
+    .movie-info-box {
+        background: rgba(216, 180, 254, 0.05);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px dashed rgba(216, 180, 254, 0.3);
+    }
+
+    .qr-container {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        display: inline-block;
+        box-shadow: 0 0 30px rgba(216, 180, 254, 0.2);
+        margin-bottom: 25px;
+        transition: 0.3s;
+    }
+    .qr-container:hover {
+        transform: scale(1.02);
+    }
+
+    .qr-image {
+        width: 220px;
+        height: 220px;
+        object-fit: contain;
+    }
+
+    .price-total {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2rem;
+        color: var(--pastel-purple);
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(216, 180, 254, 0.3);
+    }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
+        color: #2e1065 !important;
+        font-weight: 800;
+        padding: 15px;
+        border-radius: 50px;
+        border: none;
+        width: 100%;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+    }
+    .btn-confirm:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(216, 180, 254, 0.4);
+    }
+
+    .step-indicator {
+        font-size: 0.8rem;
+        color: var(--pastel-purple);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        display: block;
+    }
+/* ปรับตัวหนังสือ "สแกน QR Code..." ให้สว่างขึ้น */
+    .payment-card p.text-muted {
+        color: #d1d5db !important; /* เปลี่ยนจากเทามืดเป็นเทาสว่าง */
+        opacity: 1 !important;
+    }
+
+    /* ปรับตัวหนังสือ "ยอดชำระสุทธิ" ให้สว่างขึ้น */
+    .uppercase {
+        color: var(--pastel-purple) !important;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        opacity: 1 !important;
+    }
+
+    /* ปรับชื่อหนังและที่นั่งข้างในกล่อง */
+    .movie-info-box h5 {
+        color: #ffffff !important;
+    }
+    .movie-info-box p {
+        color: #f3f4f6 !important; /* ให้ที่นั่งสว่างขึ้น */
+    }
+    
+    /* ปรับราคาให้ใหญ่และสว่างเริ่ดๆ */
+    .price-total {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2.8rem; /* ใหญ่สะใจ */
+        color: #ffffff !important; /* สีขาวบริสุทธิ์ */
+        text-shadow: 0 0 15px rgba(216, 180, 254, 0.6);
+        margin-top: 5px;
+    }
+    
+</style>
+
+<div class="payment-wrapper">
+    <div class="container text-center">
+        
+        <div class="payment-card">
+            <span class="step-indicator">Step 3: Secure Payment</span>
+            <h2 class="mb-4 fw-bold"><i class="fas fa-credit-card me-2"></i>ชำระเงิน</h2>
+
+            <div class="movie-info-box text-start">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <i class="fas fa-film fa-2x text-white opacity-50"></i>
+                    </div>
+                    <div class="col-9">
+                        <h5 class="mb-1 fw-bold text-white">{{ movie.title }}</h5>
+                        <p class="text-white">🕒 รอบฉาย: {{ showtime }}</p>
+                        <p class="mb-0 text-muted small">
+                            <i class="fas fa-couch me-1"></i> ที่นั่ง: 
+                            <span class="text-white fw-bold">{{ seats }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-muted small mb-3">สแกน QR Code เพื่อชำระเงินผ่านแอปธนาคาร</p>
+            <div class="qr-container">
+                <img src="{% static 'images/qr.jpg' %}" class="qr-image" alt="QR Payment">
+            </div>
+
+            <div class="mb-4">
+                <p class="mb-0 uppercase">ยอดชำระสุทธิ</p>
+            <div class="price-total">
+                {{ total_price }} ฿
+            </div>
+            </div>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <input type="hidden" name="seats" value="{{seats}}">
+    <input type="hidden" name="showtime" value="{{showtime}}">
+
+    <button type="submit" class="btn btn-confirm">
+        ยืนยันการชำระเงิน
+    </button>
+</form>  
+                <a href="/" class="btn btn-link text-decoration-none mt-2" style="color: var(--pastel-purple); font-size: 0.9rem;">
+                    <i class="fas fa-home me-1"></i> ยกเลิกและกลับหน้าหลัก
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

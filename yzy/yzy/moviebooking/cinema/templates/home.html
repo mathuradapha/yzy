@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* --- Ultra Pastel Theme Variables --- */
+    :root {
+        --bg-dark: #0a0510;        /* ดำอมม่วงเข้มสนิท */
+        --pastel-purple: #d8b4fe;  /* ม่วงพาสเทลหลัก */
+        --pastel-pink: #fbcfe8;    /* ชมพูพาสเทลรอง */
+        --card-bg: rgba(255, 255, 255, 0.03); /* กระจกโปร่งแสง */
+        --border-color: rgba(216, 180, 254, 0.2); /* ขอบม่วงจางๆ */
+        --text-main: #f3f4f6;
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: 'Sarabun', sans-serif;
+        background-image: radial-gradient(circle at 50% -20%, #2e1065 0%, var(--bg-dark) 50%); /* แสงม่วงฟุ้งจากด้านบน */
+    }
+
+    /* --- Banner Section --- */
+    .banner-container {
+        position: relative;
+        height: 550px;
+        overflow: hidden;
+    }
+
+    .banner-img {
+        width: 100%; height: 100%; object-fit: cover;
+        filter: brightness(0.5) saturate(1.2);
+    }
+
+    .banner-overlay {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(to top, var(--bg-dark) 5%, transparent 60%);
+    }
+
+    .banner-caption-lux {
+        position: absolute; 
+        bottom: 25%; /* เดิม 15% ขยับขึ้นมาอีกเพื่อให้พ้นแถบค้นหา */
+        left: 8%; 
+        z-index: 10;
+        max-width: 700px;
+        transition: all 0.5s ease;
+    }
+
+    .carousel-indicators {
+        bottom: 60px !important; /* ดันจุดขึ้นไปเหนือ Search Box */
+        z-index: 25;
+    }
+
+    /* --- ปรับความเกยของ Search Section --- */
+    .search-section {
+        margin-top: -40px; /* ลดความเกยลงเล็กน้อย */
+        position: relative;
+        z-index: 30; /* ให้มั่นใจว่าอยู่บนสุด */
+        padding-bottom: 20px;
+    }
+
+    /* หัวข้อ Serif เรียบหรู (ไม่มีเรืองแสง) */
+    .banner-title-serif {
+        font-family: 'Didot', 'Bodoni MT', serif;
+        font-size: 4rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 5px;
+        letter-spacing: -2px;
+    }
+
+    .banner-sub {
+        font-size: 1.1rem;
+        color: var(--pastel-purple);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    /* --- Search & Category Section (ดึงกลับมาแบบเริ่ดๆ) --- */
+    .search-section {
+        margin-top: -50px; /* ให้เกยขึ้นไปบน Banner นิดหน่อย */
+        position: relative;
+        z-index: 20;
+    }
+
+    .search-box {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        padding: 10px 10px 10px 25px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+
+    .search-input {
+        background: transparent;
+        border: none;
+        color: white;
+        width: 100%;
+        padding-right: 15px;
+    }
+
+    .search-input:focus { outline: none; color: white; }
+
+    .btn-search-pastel {
+        background: var(--pastel-purple);
+        color: #2e1065;
+        border: none;
+        border-radius: 40px;
+        padding: 10px 30px;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .btn-search-pastel:hover {
+        background: var(--pastel-pink);
+        transform: scale(1.05);
+    }
+
+    /* หมวดหมู่แบบ Minimal Pills */
+    .category-pill {
+        color: var(--pastel-purple);
+        border: 1px solid var(--border-color);
+        background: transparent;
+        padding: 6px 20px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+    .category-pill:hover, .category-pill.active {
+        background: var(--pastel-purple);
+        color: #2e1065;
+        box-shadow: 0 0 15px rgba(216, 180, 254, 0.3);
+    }
+
+    /* --- Movie Card Cinematic --- */
+    .movie-card-cinematic {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .movie-card-cinematic:hover {
+        transform: translateY(-15px) scale(1.02);
+        border-color: var(--pastel-purple);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(216, 180, 254, 0.1);
+    }
+
+    .movie-img-lux {
+        height: 420px;
+        object-fit: cover;
+        transition: 0.8s;
+    }
+
+    .movie-card-cinematic:hover .movie-img-lux {
+        transform: scale(1.1) rotate(1deg);
+    }
+
+    /* ข้อมูลหนังแบบซ่อนไว้ก่อน Hover */
+    .movie-overlay-lux {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(15, 5, 25, 0.95) 10%, transparent 60%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 25px;
+        opacity: 0;
+        transition: 0.4s;
+    }
+
+    .movie-card-cinematic:hover .movie-overlay-lux {
+        opacity: 1;
+    }
+
+    .btn-book-pastel {
+        background: white;
+        color: #000;
+        border-radius: 12px;
+        font-weight: 700;
+        padding: 12px;
+        text-transform: uppercase;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-book-pastel:hover {
+        background: var(--pastel-purple);
+        color: #2e1065;
+    }
+
+    .score-badge {
+        position: absolute; top: 20px; left: 20px;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+        color: var(--pastel-pink); border: 1px solid var(--border-color);
+        padding: 5px 12px; border-radius: 10px; font-weight: bold;
+    }
+
+    .search-box {
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--border-color);
+        border-radius: 50px;
+        padding: 8px 8px 8px 25px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+    }
+
+    /* เพิ่มเติม: ทำให้ปุ่ม WATCH NOW ดูเด่นขึ้นและไม่เรืองแสงเกินไป */
+    .btn-watch-now {
+        background: var(--pastel-purple);
+        color: #2e1065 !important;
+        font-weight: 700;
+        border-radius: 50px;
+        padding: 12px 40px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        border: none;
+        box-shadow: 0 5px 15px rgba(216, 180, 254, 0.3);
+    }
+    .btn-watch-now:hover {
+        background: white;
+        transform: translateY(-3px);
+    }
+
+
+</style>
+
+<div id="bannerCarousel" class="carousel slide carousel-fade banner-container" data-bs-ride="carousel" data-bs-interval="4000">
+    <div class="carousel-indicators">
+        {% for m in movies %}
+        <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
+        {% endfor %}
+    </div>
+
+    <div class="carousel-inner h-100">
+        {% for m in movies %}
+        <div class="carousel-item h-100 {% if forloop.first %}active{% endif %}">
+            <img src="{{ m.banner|default:'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop' }}" class="banner-img d-block w-100">
+            <div class="banner-overlay"></div>
+            
+            <div class="banner-caption-lux">
+                <p class="banner-sub">Exclusive Cinematic Experience</p>
+                <h1 class="banner-title-serif">{{ m.title|upper }}</h1>
+                <a href="{% url 'movie_detail' m.id %}" class="btn btn-watch-now text-decoration-none d-inline-block mt-3">
+                    <i class="fas fa-play me-2"></i> WATCH NOW
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev" style="width: 5%;">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next" style="width: 5%;">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+<div class="container search-section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form method="GET" action="/" class="search-box mb-4">
+                <i class="fas fa-search text-muted me-3"></i>
+                <input name="search" class="search-input" placeholder="ค้นหาภาพยนตร์ที่น่าสนใจ..." value="{{ request.GET.search }}">
+                <button class="btn-search-pastel">SEARCH</button>
+            </form>
+
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+                <a href="/" class="category-pill {% if not request.GET.category %}active{% endif %}">All Movies</a>
+                {% for c in categories %}
+                <a href="/?category={{c.id}}{% if request.GET.search %}&search={{request.GET.search}}{% endif %}" 
+                   class="category-pill {% if request.GET.category == c.id|stringformat:'s' %}active{% endif %}">
+                    {{c.name}}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <h4 class="mb-4 fw-bold" style="color: var(--pastel-purple); letter-spacing: 2px;">
+        <i class="fas fa-sparkles me-2"></i>RECOMMENDED FOR YOU
+    </h4>
+    
+    <div class="row">
+        {% for m in movies %}
+        <div class="col-6 col-md-4 col-lg-3 mb-5">
+            <div class="movie-card-cinematic">
+                <div class="score-badge">
+                    <i class="fas fa-star me-1"></i> {{ m.fake_score|default:"8.9" }}
+                </div>
+
+                <img src="{{ m.poster }}" class="movie-img-lux w-100" alt="{{ m.title }}">
+
+                <div class="movie-overlay-lux">
+                    <h5 class="fw-bold text-white mb-1">{{ m.title }}</h5>
+                    <p class="small mb-3" style="color: var(--pastel-purple);">
+                        {% for c in m.category.all %}
+                            {{ c.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Action / Drama
+                        {% endfor %}
+                    </p>
+                    <a href="{% url 'movie_detail' m.id %}" class="btn btn-book-pastel w-100 text-decoration-none text-center">
+                        <i class="fas fa-ticket-alt me-2"></i>จองที่นั่ง
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">ไม่พบภาพยนตร์ที่ค้นหา</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

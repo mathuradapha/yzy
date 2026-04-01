@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* --- Register Theme: Pastel Galactic --- */
+    .auth-wrapper {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        padding: 50px 0;
+    }
+
+    .auth-box {
+        background: rgba(255, 255, 255, 0.03); /* กระจกใสแบบ Glassmorphism */
+        backdrop-filter: blur(25px);
+        border-radius: 30px;
+        /* แสงฟุ้งม่วงพาสเทลนวลๆ */
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(216, 180, 254, 0.15);
+        border: 1px solid rgba(216, 180, 254, 0.2);
+        padding: 40px !important;
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .auth-box:hover {
+        transform: translateY(-5px);
+        border-color: var(--pastel-purple);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(216, 180, 254, 0.25);
+    }
+
+    .auth-title {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        letter-spacing: 4px;
+        /* ไล่เฉดขาวไปม่วงพาสเทล */
+        background: linear-gradient(135deg, #ffffff, var(--pastel-purple));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 35px !important;
+    }
+
+    .input-group-custom {
+        margin-bottom: 22px;
+        position: relative;
+    }
+
+    .input-group-custom label {
+        color: var(--pastel-purple);
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+        letter-spacing: 1px;
+    }
+
+    .input-dark {
+        background: rgba(0, 0, 0, 0.4) !important;
+        border: 1px solid rgba(216, 180, 254, 0.2) !important;
+        color: white !important;
+        border-radius: 12px;
+        padding: 12px 15px;
+        transition: 0.3s;
+    }
+
+    .input-dark:focus {
+        background: rgba(0, 0, 0, 0.6) !important;
+        border-color: var(--pastel-purple) !important;
+        box-shadow: 0 0 15px rgba(216, 180, 254, 0.3) !important;
+        transform: scale(1.01);
+    }
+
+    /* ปุ่มสมัครสมาชิกพาสเทล */
+    .btn-register-pastel {
+        background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
+        color: #2e1065 !important;
+        border: none;
+        font-weight: 800;
+        padding: 14px;
+        border-radius: 15px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.4s;
+        margin-top: 15px;
+        box-shadow: 0 5px 15px rgba(216, 180, 254, 0.2);
+    }
+
+    .btn-register-pastel:hover {
+        transform: scale(1.03) translateY(-2px);
+        box-shadow: 0 10px 25px rgba(216, 180, 254, 0.4);
+        background: #fff;
+    }
+
+    .auth-footer-text {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+    }
+
+    .auth-footer-text a {
+        color: var(--pastel-purple);
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .auth-footer-text a:hover {
+        color: var(--pastel-pink);
+        text-shadow: 0 0 10px var(--pastel-purple);
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 42px;
+        color: rgba(216, 180, 254, 0.3);
+    }
+</style>
+
+<div class="auth-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+
+                <div class="auth-box text-white">
+                    <h3 class="text-center auth-title">REGISTER</h3>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="input-group-custom">
+                            <label><i class="far fa-user me-1"></i> Username</label>
+                            <input type="text" name="username" class="form-control input-dark" placeholder="Choose a username" required>
+                            <i class="fas fa-id-badge input-icon"></i>
+                        </div>
+
+                        <div class="input-group-custom">
+                            <label><i class="fas fa-lock me-1"></i> Password</label>
+                            <input type="password" name="password1" class="form-control input-dark" placeholder="Create a password" required>
+                            <i class="fas fa-key input-icon"></i>
+                        </div>
+
+                        <div class="input-group-custom">
+                            <label><i class="fas fa-check-double me-1"></i> Confirm Password</label>
+                            <input type="password" name="password2" class="form-control input-dark" placeholder="Confirm your password" required>
+                            <i class="fas fa-shield-alt input-icon"></i>
+                        </div>
+
+                        <button class="btn btn-register-pastel w-100">
+                            <i class="fas fa-user-plus me-2"></i> สมัครสมาชิก
+                        </button>
+                    </form>
+
+                    <div class="auth-footer-text text-center mt-4">
+                        มีบัญชีสมาชิกอยู่แล้ว? 
+                        <a href="{% url 'login' %}">เข้าสู่ระบบที่นี่</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

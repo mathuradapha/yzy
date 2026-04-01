@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-white">Add Movie</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <input name="title" class="form-control mb-3" placeholder="Movie Title">
+
+        <textarea name="description" class="form-control mb-3" rows="3" placeholder="Description"></textarea>
+
+        <label class="text-white mb-2">Select Categories (Hold Ctrl/Cmd to select multiple)</label>
+        <select name="category" multiple class="form-control mb-3" style="height: 150px;">
+            {% for c in categories %}
+                <option value="{{c.id}}">{{c.name}}</option>
+            {% endfor %}
+        </select>
+
+        <input name="age" class="form-control mb-3" placeholder="Age Rating">
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" name="actors" class="form-control" placeholder="นักแสดง (คั่นด้วย ,)">
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="director" class="form-control" placeholder="ผู้กำกับ">
+            </div>
+            <div class="col-md-4">
+                <input type="number" name="duration" class="form-control" placeholder="ความยาว (นาที)">
+            </div>
+        </div>
+
+        <input name="poster" class="form-control mb-3" placeholder="Poster Image URL">
+        <input name="banner" class="form-control mb-3" placeholder="Banner Image URL">
+        <input name="trailer" class="form-control mb-3" placeholder="Trailer Link">
+
+        <button type="submit" class="btn btn-cinema btn-lg px-5">
+            Save
+        </button>
+    </form>
+</div>
+{% endblock %}

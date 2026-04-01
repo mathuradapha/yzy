@@ -1,0 +1,8 @@
+<h2>เพิ่มสมาชิก</h2>
+
+<form method="post">
+{% csrf_token %}
+<input type="text" name="username" placeholder="username">
+<input type="password" name="password" placeholder="password">
+<button>บันทึก</button>
+</form>
