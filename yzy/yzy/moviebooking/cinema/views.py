@@ -95,16 +95,24 @@ def seat(request, id):
 def payment(request, id):
     movie = get_object_or_404(Movie, id=id)
 
-    # ✅ GET
     seats = request.GET.get("seats", "")
     showtime = request.GET.get("showtime", "")
 
     seat_list = seats.split(",") if seats else []
 
-    price_per_seat = 100
-    total_price = len(seat_list) * price_per_seat
+    # ✅ คำนวณราคาใหม่ตามโซน
+    total_price = 0
+    for s in seat_list:
+        row = s[0]
 
-    # 🔥 POST (ต้องอยู่ใน function!)
+        if row in ["A", "B", "C"]:
+            total_price += 120
+        elif row in ["D", "E", "F"]:
+            total_price += 150
+        else:
+            total_price += 180
+
+    # 🔥 POST
     if request.method == "POST":
         seats = request.POST.get("seats")
         showtime = request.POST.get("showtime")
@@ -128,7 +136,7 @@ def payment(request, id):
         "total_price": total_price,
         "movie_id": id
     })
-
+    
 # 🎟 หน้าตั๋ว
 @login_required(login_url='/login/')
 def ticket(request, id):
