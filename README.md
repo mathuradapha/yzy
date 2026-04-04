@@ -1,4 +1,4 @@
-# 🎬 Cinema Booking Website (Django)
+# 🎬 Cinema YZY Booking Website (Django)
 
 ## 📌 Project Overview
 
